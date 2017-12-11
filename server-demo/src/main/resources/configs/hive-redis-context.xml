@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+    <bean id="hiveJedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxTotal" value="5"/>
+        <property name="maxIdle" value="2"/>
+        <property name="maxWaitMillis" value="1000"/>
+        <property name="testOnBorrow" value="false"/>
+    </bean>
+
+    <bean id="hiveConnectionFactory"
+          class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <property name="usePool" value="true"/>
+        <property name="hostName" value="${hivemapper.redis.ip}"/>
+        <property name="port" value="${hivemapper.redis.port}"/>
+        <property name="timeout" value="60000"/>
+        <property name="poolConfig" ref="hiveJedisPoolConfig"/>
+    </bean>
+
+    <bean id="hiveRedisTemplate"
+          class="org.springframework.data.redis.core.RedisTemplate">
+        <property name="connectionFactory" ref="hiveConnectionFactory"/>
+        <property name="keySerializer">
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+        </property>
+        <property name="defaultSerializer">
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+        </property>
+    </bean>
+</beans>

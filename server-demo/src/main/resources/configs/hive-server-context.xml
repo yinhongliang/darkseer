@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+    <import resource="classpath:configs/hive-redis-context.xml"/>
+    <bean id="hiveProxyListener" class="com.holliesyin.darkseer.hive.listener.HiveProxyListener">
+        <property name="hiveClient" value="${hive.client:true}"></property>
+        <property name="proxy" ref="hiveProxy"></property>
+    </bean>
+
+    <bean id="hiveProxy" class="com.holliesyin.darkseer.hive.HiveProxy">
+        <constructor-arg ref="hiveRedisTemplate"></constructor-arg>
+    </bean>
+
+    <bean id="hiveRedisContainer" class="org.springframework.data.redis.listener.RedisMessageListenerContainer">
+        <property name="connectionFactory" ref="hiveConnectionFactory"/>
+        <property name="messageListeners">
+            <map>
+                <entry key-ref="hiveProxyListener">
+                    <bean class="org.springframework.data.redis.listener.PatternTopic">
+                        <constructor-arg value="darkseer:hive:proxy:up:*"/>
+                    </bean>
+                </entry>
+            </map>
+        </property>
+    </bean>
+</beans>

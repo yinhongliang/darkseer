@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <import resource="classpath:/configs/hive-redis-context.xml"/>
+
+    <bean class="com.holliesyin.darkseer.hive.spring.MapperScannerConfigurer">
+        <property name="basePackage" value="com.holliesyin.darkseer.hive.mapper"></property>
+        <property name="annotationClass" value="com.holliesyin.darkseer.hive.annotation.HiveMapper"></property>
+    </bean>
+
+    <bean id="hiveSession" class="com.holliesyin.darkseer.hive.spring.HiveSessionManager">
+        <constructor-arg ref="hiveClientConfig"></constructor-arg>
+    </bean>
+
+    <bean id="hiveClientConfig" class="com.holliesyin.darkseer.hive.spring.HiveClientConfig">
+        <constructor-arg value="101"></constructor-arg>
+        <constructor-arg ref="hiveRedisContainer"></constructor-arg>
+        <constructor-arg ref="hiveRedisTemplate"></constructor-arg>
+        <constructor-arg value="60000"/>
+    </bean>
+
+    <bean id="hiveSessionSupport" class="com.holliesyin.darkseer.hive.spring.HiveSessionSupport">
+        <property name="session" ref="hiveSession"></property>
+    </bean>
+</beans>
